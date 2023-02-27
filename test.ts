@@ -1,11 +1,14 @@
 import {
-  assert,
   assertEquals,
   assertThrows,
 } from "https://deno.land/std/testing/asserts.ts";
 import { StringBuilder } from "./mod.ts";
 
 Deno.test("StringBuilder", async (t) => {
+  await t.step("empty constructor", () => {
+    assertEquals(new StringBuilder().toString(), "");
+  });
+
   await t.step("constructor with value", () => {
     assertEquals(new StringBuilder("Hello").toString(), "Hello");
   });
@@ -18,6 +21,16 @@ Deno.test("StringBuilder", async (t) => {
     const instance = new StringBuilder("Hello", 10);
     assertEquals(instance.toString(), "Hello");
     assertEquals(instance.maxCapacity, 10);
+  });
+
+  await t.step("constructor with value and maxCapacity (invalid)", () => {
+    assertThrows(() => new StringBuilder("Hello", 3), RangeError);
+  });
+
+  await t.step("exceed the maximum capacity", () => {
+    const builder = new StringBuilder(10);
+    builder.append("Hello");
+    assertThrows(() => builder.append("World!"), RangeError);
   });
 
   const builder = new StringBuilder();
